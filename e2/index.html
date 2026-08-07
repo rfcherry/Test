@@ -1,8 +1,696 @@
-<div style="position:relative; width:100%; max-width:1120px; margin:0 auto;">
-  <iframe
-    src="https://<your-username>.github.io/<your-repo>/"
-    title="Anti-Periplanar — The Geometry of E2 Transition States"
-    style="width:100%; height:100vh; max-height:1400px; border:0; border-radius:12px;"
-    loading="lazy">
-  </iframe>
-</div>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Anti-Periplanar — The Geometry of E2 Transition States</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12161d;
+    --surface:#1a2029;
+    --surface-2:#212836;
+    --ink:#eae7dd;
+    --ink-dim:#9aa3b2;
+    --amber:#e8a33d;
+    --teal:#52b3a4;
+    --red:#d1495b;
+    --green:#6fbf73;
+    --line:rgba(234,231,221,0.12);
+    --line-strong:rgba(234,231,221,0.22);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--amber); color:#1a1200; }
+
+  a{ color:var(--teal); }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:.72rem;
+    color:var(--ink-dim);
+  }
+
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    margin:0 0 .4em 0;
+    letter-spacing:-0.01em;
+  }
+  h1{ font-size:clamp(2.1rem, 5vw, 3.4rem); font-weight:400; line-height:1.05; }
+  h1 em{ font-style:italic; font-weight:500; color:var(--amber); }
+  h2{ font-size:clamp(1.4rem, 3vw, 1.9rem); }
+  h3{ font-size:1.05rem; font-weight:600; font-family:'Inter',sans-serif; }
+
+  p{ color:var(--ink); }
+  .muted{ color:var(--ink-dim); }
+
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 clamp(1.2rem,4vw,2.5rem); }
+
+  header.hero{
+    padding:clamp(3rem,8vw,5.5rem) 0 clamp(2rem,5vw,3rem);
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(232,163,61,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 400px at 100% 0%, rgba(82,179,164,0.08), transparent 60%);
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap:2.5rem;
+    align-items:end;
+  }
+  @media (max-width:820px){ .hero-grid{ grid-template-columns:1fr; } }
+
+  .hero-lede{ font-size:1.08rem; max-width:46ch; color:var(--ink-dim); margin-top:1rem; }
+
+  .rxn-strip{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.95rem;
+    color:var(--ink-dim);
+    border:1px solid var(--line-strong);
+    border-radius:10px;
+    padding:1rem 1.2rem;
+    background:var(--surface);
+  }
+  .rxn-strip b{ color:var(--ink); font-weight:500; }
+  .rxn-strip .Br{ color:var(--red); }
+  .rxn-strip .B{ color:var(--teal); }
+
+  section{ padding:clamp(2.6rem,6vw,4.2rem) 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+
+  .section-head{ max-width:62ch; margin-bottom:2rem; }
+  .section-head p{ color:var(--ink-dim); }
+
+  /* ---- mechanism mini diagram ---- */
+  .mech{
+    display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap;
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:1.6rem; margin-top:1.6rem;
+  }
+  .mech svg{ flex:0 0 auto; }
+  .mech-caption{ font-size:.92rem; color:var(--ink-dim); max-width:32ch; }
+
+  /* ---- lab layout: newman + readout ---- */
+  .lab{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:2rem;
+    align-items:start;
+  }
+  @media (max-width:900px){ .lab{ grid-template-columns:1fr; } }
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line-strong);
+    border-radius:16px;
+    padding:1.6rem;
+  }
+
+  .newman-stage{ display:flex; justify-content:center; }
+  .newman-stage svg{ width:100%; max-width:400px; height:auto; }
+
+  .slider-row{ margin-top:1.2rem; }
+  .slider-row label{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:'IBM Plex Mono', monospace; font-size:.78rem;
+    text-transform:uppercase; letter-spacing:.08em; color:var(--ink-dim);
+    margin-bottom:.5rem;
+  }
+  #dihedralValue{ font-size:1rem; color:var(--amber); letter-spacing:0; text-transform:none; }
+
+  input[type=range]{
+    -webkit-appearance:none; appearance:none;
+    width:100%; height:6px; border-radius:99px;
+    background:linear-gradient(90deg, var(--green), var(--red) 16%, var(--ink-dim) 30%, var(--ink-dim) 70%, var(--red) 84%, var(--green));
+    outline:none; cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none;
+    width:20px; height:20px; border-radius:50%;
+    background:var(--ink); border:3px solid var(--bg);
+    box-shadow:0 0 0 2px var(--ink);
+    cursor:grab;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:20px; height:20px; border-radius:50%;
+    background:var(--ink); border:3px solid var(--bg);
+    box-shadow:0 0 0 2px var(--ink);
+    cursor:grab;
+  }
+  input[type=range]:focus-visible::-webkit-slider-thumb{ box-shadow:0 0 0 3px var(--amber); }
+
+  .quickset{ display:flex; gap:.5rem; margin-top:.8rem; flex-wrap:wrap; }
+  .quickset button{
+    font-family:'IBM Plex Mono', monospace; font-size:.75rem;
+    background:var(--surface-2); color:var(--ink-dim);
+    border:1px solid var(--line-strong); border-radius:99px;
+    padding:.4rem .85rem; cursor:pointer;
+  }
+  .quickset button:hover{ color:var(--ink); border-color:var(--ink-dim); }
+  .quickset button:focus-visible{ outline:2px solid var(--amber); outline-offset:2px; }
+
+  /* readout panel */
+  .readout-top{ display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .badge{
+    font-family:'IBM Plex Mono', monospace; font-size:.78rem;
+    padding:.35rem .8rem; border-radius:99px; border:1px solid var(--line-strong);
+    white-space:nowrap;
+  }
+  .badge.anti{ color:var(--green); border-color:var(--green); background:rgba(111,191,115,0.08); }
+  .badge.syn{ color:var(--amber); border-color:var(--amber); background:rgba(232,163,61,0.08); }
+  .badge.gauche{ color:var(--red); border-color:var(--red); background:rgba(209,73,91,0.08); }
+
+  .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.4rem; }
+  .stat{ border-top:1px solid var(--line); padding-top:.6rem; }
+  .stat .k{ font-family:'IBM Plex Mono', monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-dim); }
+  .stat .v{ font-size:1.3rem; font-family:'Fraunces', serif; margin-top:.15rem; }
+
+  .verdict{
+    margin-top:1.4rem; padding:1rem 1.1rem; border-radius:10px;
+    background:var(--surface-2); border:1px solid var(--line);
+    font-size:.94rem;
+  }
+  .verdict b{ display:block; margin-bottom:.25rem; font-family:'Fraunces',serif; font-weight:600; font-size:1.02rem; }
+
+  .energy-chart{ margin-top:1.2rem; }
+  .energy-chart svg{ width:100%; height:auto; display:block; }
+
+  .legend{ display:flex; gap:1.2rem; flex-wrap:wrap; margin-top:.8rem; font-size:.78rem; color:var(--ink-dim); font-family:'IBM Plex Mono', monospace; }
+  .legend span{ display:inline-flex; align-items:center; gap:.4rem; }
+  .swatch{ width:10px; height:10px; border-radius:2px; display:inline-block; }
+
+  /* reading grid */
+  .read-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; margin-top:1.8rem; }
+  @media (max-width:820px){ .read-grid{ grid-template-columns:1fr; } }
+  .read-card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:1.3rem 1.4rem; border-top:3px solid var(--ink-dim); }
+  .read-card.anti{ border-top-color:var(--green); }
+  .read-card.syn{ border-top-color:var(--amber); }
+  .read-card.gauche{ border-top-color:var(--red); }
+  .read-card .deg{ font-family:'IBM Plex Mono', monospace; color:var(--ink-dim); font-size:.85rem; }
+  .read-card p{ font-size:.92rem; color:var(--ink-dim); margin-top:.5rem; }
+
+  /* quiz */
+  .quiz-card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:1.5rem; margin-top:1.2rem; }
+  .quiz-q{ font-family:'Fraunces', serif; font-size:1.08rem; margin-bottom:1rem; }
+  .quiz-opts{ display:flex; flex-direction:column; gap:.55rem; }
+  .quiz-opts button{
+    text-align:left; font-family:'Inter',sans-serif; font-size:.94rem; color:var(--ink);
+    background:var(--surface-2); border:1px solid var(--line-strong); border-radius:10px;
+    padding:.75rem 1rem; cursor:pointer;
+  }
+  .quiz-opts button:hover{ border-color:var(--ink-dim); }
+  .quiz-opts button:focus-visible{ outline:2px solid var(--amber); }
+  .quiz-opts button.correct{ border-color:var(--green); background:rgba(111,191,115,0.1); }
+  .quiz-opts button.incorrect{ border-color:var(--red); background:rgba(209,73,91,0.1); }
+  .quiz-feedback{ margin-top:.9rem; font-size:.9rem; color:var(--ink-dim); display:none; }
+  .quiz-feedback.show{ display:block; }
+
+  footer{ padding:2.5rem 0 3.5rem; }
+  footer p{ color:var(--ink-dim); font-size:.85rem; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Organic Chemistry · Elimination Reactions</p>
+      <h1>The molecule has to be<br><em>lined up</em> to eliminate.</h1>
+      <p class="hero-lede">E2 is concerted — the base pulls off a β-hydrogen at the exact instant the leaving group departs and a new π bond forms. That only works from certain conformations. Rotate the molecule below to find out which ones.</p>
+    </div>
+    <div class="rxn-strip">
+      <b>:B⁻</b> + H–C<sub>β</sub>–C<sub>α</sub>–<span class="Br">LG</span> &nbsp;→&nbsp; B–H + C<sub>β</sub>=C<sub>α</sub> + <span class="Br">LG⁻</span>
+      <div class="muted" style="margin-top:.5rem; font-size:.82rem;">one step · one transition state · geometry-dependent</div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section id="mechanism">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">01 — Why geometry matters</p>
+        <h2>Three things happen at once</h2>
+        <p>In the E2 transition state, the C–H bond and the C–LG bond are both partway broken while a π bond is partway formed between the two carbons. That developing π bond is built from the p-orbital character left behind as each σ bond breaks — and p orbitals only overlap into a π bond if they're pointed the same way.</p>
+      </div>
+      <div class="mech">
+        <svg viewBox="0 0 480 230" style="width:100%; max-width:480px; height:auto;" aria-hidden="true">
+          <!-- bracket, left -->
+          <path d="M34,55 h12 M34,55 v120 M34,175 h12" stroke="#eae7dd" stroke-width="2" fill="none" stroke-opacity="0.65"/>
+          <!-- bracket, right -->
+          <path d="M436,55 h-12 M436,55 v120 M436,175 h-12" stroke="#eae7dd" stroke-width="2" fill="none" stroke-opacity="0.65"/>
+          <text x="444" y="52" fill="#eae7dd" font-family="Fraunces" font-style="italic" font-size="20">‡</text>
+
+          <!-- delta-minus charges, developing -->
+          <text x="52" y="128" fill="#52b3a4" font-family="IBM Plex Mono" font-size="13">δ⁻</text>
+          <text x="392" y="128" fill="#d1495b" font-family="IBM Plex Mono" font-size="13">δ⁻</text>
+
+          <!-- main chain: B···H···Cβ⋯Cα···Br, partial bonds dashed -->
+          <line x1="70" y1="150" x2="140" y2="100" stroke="#52b3a4" stroke-width="2" stroke-dasharray="3 4"/>
+          <line x1="140" y1="100" x2="220" y2="150" stroke="#e8a33d" stroke-width="2" stroke-dasharray="3 4"/>
+          <line x1="220" y1="150" x2="320" y2="100" stroke="#eae7dd" stroke-width="2.2"/>
+          <line x1="222" y1="140" x2="318" y2="90" stroke="#eae7dd" stroke-width="1.6" stroke-dasharray="3 4" stroke-opacity="0.8"/>
+          <line x1="320" y1="100" x2="400" y2="150" stroke="#d1495b" stroke-width="2" stroke-dasharray="3 4"/>
+
+          <!-- Cβ substituents -->
+          <line x1="220" y1="150" x2="190" y2="205" stroke="#eae7dd" stroke-width="1.6" stroke-opacity="0.6"/>
+          <line x1="220" y1="150" x2="252" y2="205" stroke="#eae7dd" stroke-width="1.6" stroke-opacity="0.6"/>
+          <!-- Cα substituents -->
+          <line x1="320" y1="100" x2="288" y2="46" stroke="#eae7dd" stroke-width="1.6" stroke-opacity="0.6"/>
+          <line x1="320" y1="100" x2="352" y2="46" stroke="#eae7dd" stroke-width="1.6" stroke-opacity="0.6"/>
+
+          <!-- labels -->
+          <text x="55" y="168" fill="#52b3a4" font-family="IBM Plex Mono" font-size="14" text-anchor="middle">B</text>
+          <text x="140" y="88" fill="#eae7dd" font-family="IBM Plex Mono" font-size="14" text-anchor="middle">H</text>
+          <text x="215" y="172" fill="#9aa3b2" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">Cβ</text>
+          <text x="325" y="86" fill="#9aa3b2" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">Cα</text>
+          <text x="408" y="160" fill="#d1495b" font-family="IBM Plex Mono" font-size="14" text-anchor="middle">Br</text>
+          <text x="182" y="220" fill="#9aa3b2" font-family="IBM Plex Mono" font-size="12" text-anchor="middle">CH₃</text>
+          <text x="260" y="220" fill="#9aa3b2" font-family="IBM Plex Mono" font-size="12" text-anchor="middle">H</text>
+          <text x="280" y="35" fill="#9aa3b2" font-family="IBM Plex Mono" font-size="12" text-anchor="middle">CH₃</text>
+          <text x="360" y="35" fill="#9aa3b2" font-family="IBM Plex Mono" font-size="12" text-anchor="middle">H</text>
+
+          <text x="240" y="205" fill="#eae7dd" font-family="IBM Plex Mono" font-size="10" text-anchor="middle" opacity="0.55">partial π bond</text>
+
+          <!-- electron-pushing arrows -->
+          <defs>
+            <marker id="mechArrow" markerWidth="9" markerHeight="9" refX="6" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 z" fill="context-stroke"/>
+            </marker>
+          </defs>
+          <path d="M62,133 Q98,52 137,95" stroke="#52b3a4" stroke-width="2" fill="none" marker-end="url(#mechArrow)"/>
+          <path d="M155,112 Q210,58 266,92" stroke="#e8a33d" stroke-width="2" fill="none" marker-end="url(#mechArrow)"/>
+          <path d="M350,118 Q382,98 397,140" stroke="#d1495b" stroke-width="2" fill="none" marker-end="url(#mechArrow)"/>
+        </svg>
+        <p class="mech-caption">The curved arrows show where the electrons go: the base's lone pair forms the new B–H bond (teal), the breaking C–H bond's electrons swing in to form the π bond (amber), and the C–Br bond's electrons leave entirely with the bromide (red). All four bonds are only partly formed or broken at once — shown in brackets with a double-dagger (‡), the standard notation for a transition state — and negative charge builds up on both B and Br as they pull electron density toward themselves.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="lab-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">02 — The Newman projection</p>
+        <h2>Rotate the back carbon. Find the transition state.</h2>
+        <p>Br on the front carbon is fixed pointing up. Drag the slider to rotate the back carbon and change the dihedral angle between Br and the highlighted β-hydrogen. Watch what happens to the orbital alignment, the energy, and whether elimination can actually happen.</p>
+      </div>
+
+      <div class="lab">
+        <div class="panel">
+          <div class="newman-stage">
+            <svg id="newmanSvg" viewBox="0 0 400 400" role="img" aria-label="Newman projection with rotatable back carbon">
+              <!-- populated by JS -->
+            </svg>
+          </div>
+          <div class="slider-row">
+            <label for="dihedral">
+              <span>Dihedral angle (Br–C–C–Hβ)</span>
+              <span id="dihedralValue">180°</span>
+            </label>
+            <input type="range" id="dihedral" min="0" max="360" step="1" value="180" aria-label="Dihedral angle in degrees">
+          </div>
+          <div class="quickset">
+            <button data-angle="180">Anti · 180°</button>
+            <button data-angle="0">Syn · 0°</button>
+            <button data-angle="60">Gauche · 60°</button>
+            <button data-angle="120">Gauche · 120°</button>
+            <button id="randomBtn">Randomize</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="readout-top">
+            <h3 style="margin:0;">Transition-state readout</h3>
+            <span id="classBadge" class="badge anti">anti-periplanar</span>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <div class="k">Orbital overlap</div>
+              <div class="v" id="overlapVal">100%</div>
+            </div>
+            <div class="stat">
+              <div class="k">Relative TS energy</div>
+              <div class="v" id="energyVal">+0.0 kcal/mol</div>
+            </div>
+          </div>
+
+          <div class="verdict" id="verdict">
+            <b>E2 proceeds readily</b>
+            <span id="verdictText">Staggered, no eclipsing strain, and the C–H / C–LG bonds are perfectly aligned for π-bond formation. This is the geometry E2 reactions strongly prefer.</span>
+          </div>
+
+          <div class="energy-chart">
+            <svg id="energySvg" viewBox="0 0 400 170" role="img" aria-label="Transition state energy versus dihedral angle"></svg>
+            <div class="legend">
+              <span><span class="swatch" style="background:var(--green)"></span> anti-periplanar</span>
+              <span><span class="swatch" style="background:var(--amber)"></span> syn-periplanar</span>
+              <span><span class="swatch" style="background:var(--red)"></span> gauche</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="read-grid">
+        <div class="read-card anti">
+          <h3>Anti-periplanar</h3>
+          <div class="deg">180°</div>
+          <p>H and the leaving group point in opposite directions. The conformation is staggered — no eclipsing strain — and the breaking σ bonds line up for clean backside overlap. The dominant pathway for open-chain E2.</p>
+        </div>
+        <div class="read-card syn">
+          <h3>Syn-periplanar</h3>
+          <div class="deg">0° / 360°</div>
+          <p>H and the leaving group point the same direction. Orbital alignment is possible, but the conformation is eclipsed. Higher energy — usually only seen in ring systems where anti is geometrically locked out.</p>
+        </div>
+        <div class="read-card gauche">
+          <h3>Gauche</h3>
+          <div class="deg">~60°, 120°, 240°, 300°</div>
+          <p>The C–H and C–LG bonds sit at an angle to each other with no useful overlap. There's no path to a π bond from here — a concerted E2 simply can't happen at this dihedral.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="quiz-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">03 — Check yourself</p>
+        <h2>Three quick questions</h2>
+        <p>Click an answer to see whether it's right.</p>
+      </div>
+
+      <div id="quizContainer"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Built as a teaching aid for E2 stereoelectronics — anti-periplanar geometry, orbital overlap, and transition-state energetics. Free to reuse and adapt for coursework.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---------- helpers ----------
+  const toRad = d => d * Math.PI / 180;
+  function polar(cx, cy, r, deg){
+    const rad = toRad(deg);
+    return { x: cx + r*Math.sin(rad), y: cy - r*Math.cos(rad) };
+  }
+  function angDistTo0(theta){
+    let d = theta % 360;
+    if (d > 180) d = 360 - d;
+    return d;
+  }
+  function energyAt(theta){
+    const rad = toRad(theta);
+    const overlap = Math.cos(rad) * Math.cos(rad); // 1 at 0/180, 0 at 90/270
+    const eclipseBump = 20 * Math.exp(-(angDistTo0(theta)**2) / (2*25*25));
+    return 30 + 55*(1-overlap) + eclipseBump;
+  }
+  function overlapPct(theta){
+    const rad = toRad(theta);
+    return Math.round(Math.cos(rad)*Math.cos(rad)*100);
+  }
+  function classify(theta){
+    const t = ((theta % 360)+360)%360;
+    const distAnti = Math.abs(t-180);
+    const distSyn = Math.min(t, 360-t);
+    if (distAnti <= 15) return 'anti';
+    if (distSyn <= 15) return 'syn';
+    return 'gauche';
+  }
+
+  // ---------- Newman projection ----------
+  const svgNS = "http://www.w3.org/2000/svg";
+  const newman = document.getElementById('newmanSvg');
+  const cx = 200, cy = 195, backR = 58, frontLen = 128, backLen = 128;
+
+  function el(tag, attrs){
+    const e = document.createElementNS(svgNS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function drawNewman(theta){
+    newman.innerHTML = '';
+
+    // back circle
+    newman.appendChild(el('circle',{cx, cy, r:backR, fill:'none', stroke:'#eae7dd', 'stroke-opacity':0.35, 'stroke-width':2}));
+
+    const cls = classify(theta);
+    const axisColor = cls==='anti' ? '#6fbf73' : cls==='syn' ? '#e8a33d' : '#d1495b';
+
+    // front substituents (fixed): Br=0, CH3=120, H=240
+    const front = [
+      {deg:0, label:'Br', color:'#d1495b', isAxis:true},
+      {deg:120, label:'CH₃', color:'#9aa3b2', isAxis:false},
+      {deg:240, label:'H', color:'#9aa3b2', isAxis:false},
+    ];
+    front.forEach(s => {
+      const p = polar(cx, cy, frontLen, s.deg);
+      newman.appendChild(el('line',{x1:cx,y1:cy,x2:p.x,y2:p.y, stroke:s.color, 'stroke-width':3}));
+      const lp = polar(cx, cy, frontLen+22, s.deg);
+      const t = el('text',{x:lp.x, y:lp.y+4, fill:s.color, 'font-family':'IBM Plex Mono', 'font-size':15, 'text-anchor':'middle'});
+      t.textContent = s.label;
+      newman.appendChild(t);
+    });
+
+    // back substituents (rotatable): target H = theta, CH3 = +120, H = +240
+    const back = [
+      {deg:theta, label:'H', color:'#52b3a4', target:true},
+      {deg:theta+120, label:'CH₃', color:'#9aa3b2', target:false},
+      {deg:theta+240, label:'H', color:'#9aa3b2', target:false},
+    ];
+    back.forEach(s => {
+      const p1 = polar(cx, cy, backR, s.deg);
+      const p2 = polar(cx, cy, backLen, s.deg);
+      newman.appendChild(el('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y, stroke:s.color, 'stroke-width': s.target?4:3}));
+      const lp = polar(cx, cy, backLen+22, s.deg);
+      const t = el('text',{x:lp.x, y:lp.y+4, fill:s.color, 'font-family':'IBM Plex Mono', 'font-size':15, 'font-weight': s.target?600:400, 'text-anchor':'middle'});
+      t.textContent = s.label;
+      newman.appendChild(t);
+      if (s.target){
+        newman.appendChild(el('circle',{cx:p2.x, cy:p2.y, r:5, fill:'none', stroke:'#52b3a4', 'stroke-width':2}));
+      }
+    });
+
+    // front center dot
+    newman.appendChild(el('circle',{cx, cy, r:4, fill:'#eae7dd'}));
+
+    // periplanar axis line: Br position to target-H position, drawn faintly through the molecule
+    const brEnd = polar(cx, cy, frontLen, 0);
+    const hEnd = polar(cx, cy, backLen, theta);
+    newman.appendChild(el('line',{
+      x1:brEnd.x, y1:brEnd.y, x2:hEnd.x, y2:hEnd.y,
+      stroke:axisColor, 'stroke-width':1.5, 'stroke-dasharray': cls==='gauche' ? '3 4' : 'none', opacity:0.55
+    }));
+
+    // base approaching, only emphasized near anti
+    if (cls === 'anti'){
+      const basePos = polar(cx, cy, backLen+55, theta);
+      const bt = el('text',{x:basePos.x, y:basePos.y+4, fill:'#52b3a4', 'font-family':'IBM Plex Mono', 'font-size':14, 'text-anchor':'middle'});
+      bt.textContent = ':B⁻';
+      newman.appendChild(bt);
+      const hEdge = polar(cx, cy, backLen+18, theta);
+      newman.appendChild(el('line',{x1:basePos.x, y1:basePos.y-14, x2:hEdge.x, y2:hEdge.y, stroke:'#52b3a4','stroke-width':1.4,'stroke-dasharray':'3 3'}));
+    }
+  }
+
+  // ---------- energy chart ----------
+  const esvg = document.getElementById('energySvg');
+  const chartW = 400, chartH = 170, padL = 30, padR = 12, padT = 14, padB = 26;
+  const plotW = chartW - padL - padR, plotH = chartH - padT - padB;
+  const minE = 30, maxE = 95;
+
+  function xFor(theta){ return padL + (theta/360)*plotW; }
+  function yFor(e){ return padT + (1 - (e-minE)/(maxE-minE)) * plotH; }
+
+  function buildEnergyChart(){
+    esvg.innerHTML = '';
+    // axes
+    esvg.appendChild(el('line',{x1:padL,y1:padT,x2:padL,y2:padT+plotH, stroke:'#eae7dd','stroke-opacity':0.25}));
+    esvg.appendChild(el('line',{x1:padL,y1:padT+plotH,x2:padL+plotW,y2:padT+plotH, stroke:'#eae7dd','stroke-opacity':0.25}));
+
+    // background zone tint for gauche ranges (rough, purely illustrative)
+    [[45,135],[225,315]].forEach(([a,b])=>{
+      const x1=xFor(a), x2=xFor(b);
+      esvg.appendChild(el('rect',{x:x1,y:padT,width:x2-x1,height:plotH, fill:'#d1495b', opacity:0.06}));
+    });
+
+    // curve
+    let d = '';
+    for (let t=0; t<=360; t+=4){
+      const x = xFor(t), y = yFor(energyAt(t));
+      d += (t===0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    }
+    esvg.appendChild(el('path',{d, fill:'none', stroke:'#eae7dd', 'stroke-width':2, opacity:0.8}));
+
+    // tick labels
+    [0,90,180,270,360].forEach(t=>{
+      const x = xFor(t);
+      const tx = el('text',{x, y: padT+plotH+18, fill:'#9aa3b2', 'font-family':'IBM Plex Mono','font-size':10,'text-anchor':'middle'});
+      tx.textContent = t+'°';
+      esvg.appendChild(tx);
+    });
+    const ly = el('text',{x:8, y:padT+8, fill:'#9aa3b2','font-family':'IBM Plex Mono','font-size':9});
+    ly.textContent = 'E';
+    esvg.appendChild(ly);
+
+    esvg.appendChild(el('circle',{id:'energyMarker', cx:xFor(180), cy:yFor(energyAt(180)), r:5.5, fill:'#e8a33d', stroke:'#12161d','stroke-width':2}));
+  }
+
+  function updateEnergyMarker(theta){
+    const m = document.getElementById('energyMarker');
+    if (!m) return;
+    m.setAttribute('cx', xFor(theta));
+    m.setAttribute('cy', yFor(energyAt(theta)));
+    const cls = classify(theta);
+    m.setAttribute('fill', cls==='anti' ? '#6fbf73' : cls==='syn' ? '#e8a33d' : '#d1495b');
+  }
+
+  // ---------- readout ----------
+  const badge = document.getElementById('classBadge');
+  const overlapVal = document.getElementById('overlapVal');
+  const energyVal = document.getElementById('energyVal');
+  const verdict = document.getElementById('verdict');
+  const verdictText = document.getElementById('verdictText');
+  const dihedralValue = document.getElementById('dihedralValue');
+  const slider = document.getElementById('dihedral');
+
+  const copy = {
+    anti: {
+      badge:'anti-periplanar', badgeClass:'anti',
+      title:'E2 proceeds readily',
+      text:'Staggered, no eclipsing strain, and the C–H / C–LG bonds are perfectly aligned for π-bond formation. This is the geometry E2 reactions strongly prefer.'
+    },
+    syn: {
+      badge:'syn-periplanar', badgeClass:'syn',
+      title:'E2 is possible, but disfavored',
+      text:'The orbitals are aligned, but the eclipsed conformation adds torsional strain. This pathway mainly matters in rings where rotation to anti isn\u2019t possible.'
+    },
+    gauche: {
+      badge:'gauche — no overlap', badgeClass:'gauche',
+      title:'E2 cannot occur from here',
+      text:'The breaking C–H and C–LG σ bonds aren\u2019t aligned, so there\u2019s no orbital pathway to a π bond. The molecule would need to rotate before elimination could happen.'
+    }
+  };
+
+  function refBase(theta){ return 30; } // anti baseline
+
+  function update(theta){
+    theta = ((theta % 360) + 360) % 360;
+    drawNewman(theta);
+    updateEnergyMarker(theta);
+
+    const cls = classify(theta);
+    const c = copy[cls];
+    badge.textContent = c.badge;
+    badge.className = 'badge ' + c.badgeClass;
+    verdict.querySelector('b').textContent = c.title;
+    verdictText.textContent = c.text;
+
+    overlapVal.textContent = overlapPct(theta) + '%';
+    const rel = (energyAt(theta) - energyAt(180)).toFixed(1);
+    energyVal.textContent = (rel >= 0 ? '+' : '') + rel + ' kcal/mol';
+    dihedralValue.textContent = Math.round(theta) + '°';
+    slider.value = theta;
+  }
+
+  slider.addEventListener('input', e => update(parseFloat(e.target.value)));
+  document.querySelectorAll('.quickset button[data-angle]').forEach(btn=>{
+    btn.addEventListener('click', ()=> update(parseFloat(btn.dataset.angle)));
+  });
+  document.getElementById('randomBtn').addEventListener('click', ()=>{
+    update(Math.floor(Math.random()*360));
+  });
+
+  buildEnergyChart();
+  update(180);
+
+  // ---------- quiz ----------
+  const quizData = [
+    {
+      q: "A student draws Br pointing straight up on the front carbon and a β-hydrogen pointing straight up on the back carbon (dihedral = 0°). What is this geometry?",
+      options: ["Anti-periplanar", "Syn-periplanar", "Gauche"],
+      correct: 1,
+      explain: "Both groups point the same direction — a 0° dihedral is syn-periplanar. Orbital overlap is possible here, but the conformation is eclipsed."
+    },
+    {
+      q: "Anti- and syn-periplanar can both align orbitals for π-bond formation. Why is anti still strongly preferred?",
+      options: ["Anti has no eclipsing strain — it's a staggered conformation", "Anti forms a stronger π bond overall", "Anti releases more heat when the reaction finishes"],
+      correct: 0,
+      explain: "Both geometries can align the breaking σ bonds, but syn is eclipsed and therefore higher in energy. Anti is staggered, so it's the lower-energy, faster pathway."
+    },
+    {
+      q: "At a gauche dihedral (~60°), why can't a concerted E2 happen?",
+      options: ["The leaving group is sterically too large", "The C–H and C–LG orbitals aren't aligned, so no π bond can form", "Gauche conformations are too stable to react"],
+      correct: 1,
+      explain: "Without the σ(C–H) and σ*(C–LG) orbitals pointed the same way, there's no path to the developing π bond — the geometry, not stability or sterics, is what rules this out."
+    }
+  ];
+
+  const container = document.getElementById('quizContainer');
+  quizData.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+
+    const q = document.createElement('div');
+    q.className = 'quiz-q';
+    q.textContent = (i+1) + '. ' + item.q;
+    card.appendChild(q);
+
+    const opts = document.createElement('div');
+    opts.className = 'quiz-opts';
+
+    const feedback = document.createElement('div');
+    feedback.className = 'quiz-feedback';
+
+    item.options.forEach((opt, oi) => {
+      const b = document.createElement('button');
+      b.textContent = opt;
+      b.addEventListener('click', () => {
+        Array.from(opts.children).forEach(c => c.classList.remove('correct','incorrect'));
+        if (oi === item.correct){
+          b.classList.add('correct');
+        } else {
+          b.classList.add('incorrect');
+          opts.children[item.correct].classList.add('correct');
+        }
+        feedback.textContent = item.explain;
+        feedback.classList.add('show');
+      });
+      opts.appendChild(b);
+    });
+
+    card.appendChild(opts);
+    card.appendChild(feedback);
+    container.appendChild(card);
+  });
+})();
+</script>
+
+</body>
+</html>
